@@ -529,23 +529,41 @@ sb.auth.onAuthStateChange(async(event,session)=>{
   }
 });
 
-async function loadProfile(){
-  const {data:profile}=await sb.from('profiles').select('*,schools(*)').eq('id',currentUser.id).single();
-  currentProfile=profile;currentSchool=profile?.schools;
-  const init=(profile?.name||'?').slice(0,1);
-  const isOwner=profile?.role==='owner'||profile?.role==='superadmin';
-  if(isOwner){
-    document.getElementById('o-school-name').textContent=currentSchool?.name||'補習班';
-    document.getElementById('o-school-code').textContent='代碼：'+(currentSchool?.code||'---');
-    document.getElementById('o-name').textContent=profile?.name||'';
-    document.getElementById('o-avatar').textContent=init;
-    document.getElementById('owner-sidebar').style.display='flex';
+async function loadProfile() {
+  let profile = null;
+  // 最多重試5次，每次等500ms（解決寫入延遲問題）
+  for (let i = 0; i < 5; i++) {
+    const { data } = await sb.from('profiles')
+      .select('*,schools(*)')
+      .eq('id', currentUser.id)
+      .single();
+    if (data?.role) { profile = data; break; }
+    await new Promise(r => setTimeout(r, 500));
+  }
+  if (!profile) { 
+    toast('讀取帳號資料失敗，請重新登入', 'error'); 
+    await sb.auth.signOut(); 
+    location.reload(); 
+    return; 
+  }
+  currentProfile = profile;
+  currentSchool = profile?.schools;
+  const init = (profile?.name || '?').slice(0, 1);
+  const isOwner = profile?.role === 'owner' || profile?.role === 'superadmin';
+  if (isOwner) {
+    document.getElementById('o-school-name').textContent = currentSchool?.name || '補習班';
+    document.getElementById('o-school-code').textContent = '代碼：' + (currentSchool?.code || '---');
+    document.getElementById('o-name').textContent = profile?.name || '';
+    document.getElementById('o-avatar').textContent = init;
+    document.getElementById('owner-sidebar').style.display = 'flex';
   } else {
-    document.getElementById('a-school-name').textContent=currentSchool?.name||'補習班';
-    document.getElementById('a-school-code').textContent='代碼：'+(currentSchool?.code||'---');
-    document.getElementById('a-name').textContent=profile?.name||'';
-    document.getElementById('a-avatar').textContent=init;
-    document.getElementById('assistant-sidebar').style.display='flex';
+    document.getElementById('a-school-name').textContent = currentSchool?.name || '補習班';
+    document.getElementById('a-school-code').textContent = '代碼：' + (currentSchool?.code || '---');
+    document.getElementById('a-name').textContent = profile?.name || '';
+    document.getElementById('a-avatar').textContent = init;
+    document.getElementById('assistant-sidebar').style.display = 'flex';
+  }
+}
   }
 }
 
