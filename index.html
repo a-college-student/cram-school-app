@@ -436,7 +436,18 @@ async function doRegister(){
     const userId=authData.user?.id;
     const {data:newSchool,error:nsErr}=await sb.from('schools').insert({code:roomCode,name:schoolName}).select().single();
     if(nsErr){showAuthError('建立教室失敗：'+nsErr.message);btn.disabled=false;btn.textContent='建立帳號';return;}
-    const {error:profileErr}=await sb.from('profiles').upsert({id:userId,school_id:newSchool.id,name,role:'owner'},{onConflict:'id'});
+    const { error: profileErr } = await sb.from('profiles').upsert({
+  id: userId,
+  school_id: newSchool.id,
+  name,
+  role: 'owner'
+});
+
+if (profileErr) {
+  console.log('❌ profile錯誤:', profileErr);
+  alert('profile寫入失敗');
+  return;
+}
     if(profileErr){showAuthError('Profile建立失敗：'+profileErr.message);btn.disabled=false;btn.textContent='建立帳號';return;}
     await new Promise(r=>setTimeout(r,800));
     const {data:check}=await sb.from('profiles').select('role').eq('id',userId).single();
