@@ -7,18 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --primary:#1a56db; --primary-light:#e8f0fe; --primary-dark:#1040aa;
-  --success:#0d9f6e; --success-light:#e3faf0;
-  --warning:#c27803; --warning-light:#fdf3cd;
-  --danger:#c81e1e; --danger-light:#fde8e8;
-  --owner:#7c3aed; --owner-light:#ede9fe;
-  --bg:#f5f6fa; --surface:#fff; --surface2:#f0f2f8;
-  --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.14);
-  --text:#111827; --text2:#4b5563; --text3:#9ca3af;
-  --sidebar-w:220px; --radius:10px;
-  --shadow:0 1px 4px rgba(0,0,0,0.07),0 4px 16px rgba(0,0,0,0.05);
-}
+:root{--primary:#1a56db;--primary-light:#e8f0fe;--primary-dark:#1040aa;--success:#0d9f6e;--success-light:#e3faf0;--warning:#c27803;--warning-light:#fdf3cd;--danger:#c81e1e;--danger-light:#fde8e8;--owner:#7c3aed;--owner-light:#ede9fe;--bg:#f5f6fa;--surface:#fff;--surface2:#f0f2f8;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);--text:#111827;--text2:#4b5563;--text3:#9ca3af;--sidebar-w:220px;--radius:10px;--shadow:0 1px 4px rgba(0,0,0,0.07),0 4px 16px rgba(0,0,0,0.05);}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
 #auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a56db 0%,#0d9f6e 100%);}
@@ -182,8 +171,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 </style>
 </head>
 <body>
-
-<!-- AUTH -->
 <div id="auth-screen">
   <div class="auth-card">
     <div class="auth-logo">
@@ -241,17 +228,10 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
     </div>
   </div>
 </div>
-
-<!-- APP -->
 <div id="app-screen">
  <div class="layout">
-
-  <!-- 助理 Sidebar -->
   <div class="sidebar" id="assistant-sidebar" style="display:none">
-    <div class="sidebar-header">
-      <div class="school-name" id="a-school-name"></div>
-      <div class="school-code" id="a-school-code"></div>
-    </div>
+    <div class="sidebar-header"><div class="school-name" id="a-school-name"></div><div class="school-code" id="a-school-code"></div></div>
     <div class="sidebar-nav">
       <div class="nav-section-label">日常功能</div>
       <div class="nav-item active" id="nav-a-tasks" onclick="showPage('a','tasks',this)"><span class="nav-icon">✓</span> 每日任務</div>
@@ -267,14 +247,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
       </div>
     </div>
   </div>
-
-  <!-- 負責人 Sidebar -->
   <div class="sidebar owner-sidebar" id="owner-sidebar" style="display:none">
-    <div class="sidebar-header">
-      <div class="school-name" id="o-school-name"></div>
-      <div class="school-code" id="o-school-code"></div>
-      <div class="role-badge-sb">負責人</div>
-    </div>
+    <div class="sidebar-header"><div class="school-name" id="o-school-name"></div><div class="school-code" id="o-school-code"></div><div class="role-badge-sb">負責人</div></div>
     <div class="sidebar-nav">
       <div class="nav-section-label">管理</div>
       <div class="nav-item active" id="nav-o-overview" onclick="showPage('o','overview',this)"><span class="nav-icon">📊</span> 總覽</div>
@@ -293,25 +267,17 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
       </div>
     </div>
   </div>
-
-  <!-- Main -->
   <div class="main">
-
-    <!-- 助理：每日任務 -->
     <div class="page active" id="page-a-tasks">
       <div class="page-header"><div class="page-title">每日任務清單</div><div class="page-sub" id="a-task-date"></div></div>
       <div class="card"><div class="progress-bar"><div class="progress-fill" id="a-prog-fill" style="width:0%"></div></div><div class="progress-meta"><span id="a-prog-label">載入中...</span><span id="a-prog-pct">0%</span></div></div>
       <div id="a-task-content"><div class="loading"><div class="spinner"></div>載入任務中...</div></div>
     </div>
-
-    <!-- 助理：SOP -->
     <div class="page" id="page-a-sop">
       <div class="page-header"><div class="page-title">SOP 知識庫</div><div class="page-sub">點擊查看話術與應對方式</div></div>
       <div class="card"><div class="card-title">💬 如何介紹補習班</div><div class="sop-grid" id="a-sop-intro"><div class="loading"><div class="spinner"></div></div></div></div>
       <div class="card"><div class="card-title">❓ 家長常見問題應對</div><div class="sop-grid" id="a-sop-qa"></div></div>
     </div>
-
-    <!-- 助理：交接日誌 -->
     <div class="page" id="page-a-handover">
       <div class="page-header"><div class="page-title">交接日誌</div><div class="page-sub">填寫今日交接，查看歷史紀錄</div></div>
       <div class="card">
@@ -326,8 +292,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
       </div>
       <div class="card"><div class="card-title">📅 歷史交接紀錄</div><div id="a-handover-logs"><div class="loading"><div class="spinner"></div></div></div></div>
     </div>
-
-    <!-- 助理：代班申請 -->
     <div class="page" id="page-a-shift">
       <div class="page-header"><div class="page-title">代班申請</div><div class="page-sub">提出代班申請或幫同事代班</div></div>
       <div class="card">
@@ -342,35 +306,25 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
       </div>
       <div class="card"><div class="card-title">📣 目前代班需求</div><div id="a-shift-list"><div class="loading"><div class="spinner"></div></div></div></div>
     </div>
-
-    <!-- 負責人：總覽 -->
     <div class="page" id="page-o-overview">
       <div class="page-header"><div class="page-title">總覽</div><div class="page-sub" id="o-date"></div></div>
       <div class="stats-grid" id="o-stats"></div>
       <div class="card"><div class="card-title">🔔 待處理事項</div><div id="o-pending-list"><div class="loading"><div class="spinner"></div></div></div></div>
     </div>
-
-    <!-- 負責人：代班審核 -->
     <div class="page" id="page-o-shift">
       <div class="page-header"><div class="page-title">代班審核</div><div class="page-sub">查看所有代班申請狀況</div></div>
       <div class="card"><div class="card-title" style="color:var(--warning);">⏳ 待接班（尚未有人接手）</div><div id="o-shift-pending"><div class="loading"><div class="spinner"></div></div></div></div>
       <div class="card"><div class="card-title" style="color:#1d4ed8;">👀 待審核（已有人接手，代班人是誰）</div><div id="o-shift-filled"><div class="loading"><div class="spinner"></div></div></div></div>
       <div class="card"><div class="card-title">📋 歷史紀錄</div><div id="o-shift-history"><div class="loading"><div class="spinner"></div></div></div></div>
     </div>
-
-    <!-- 負責人：交接日誌 -->
     <div class="page" id="page-o-handover">
       <div class="page-header"><div class="page-title">交接日誌</div><div class="page-sub">查看所有助理的交接紀錄</div></div>
       <div class="card"><div id="o-handover-logs"><div class="loading"><div class="spinner"></div></div></div></div>
     </div>
-
-    <!-- 負責人：成員管理 -->
     <div class="page" id="page-o-members">
       <div class="page-header"><div class="page-title">成員管理</div><div class="page-sub">查看教室內所有成員</div></div>
       <div class="card"><div id="o-member-list"><div class="loading"><div class="spinner"></div></div></div></div>
     </div>
-
-    <!-- 負責人：任務設定 -->
     <div class="page" id="page-o-tasks">
       <div class="page-header"><div class="page-title">每日任務設定</div><div class="page-sub">新增或刪除助理的每日任務項目</div></div>
       <div class="card">
@@ -383,45 +337,30 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
         </div>
       </div>
     </div>
-
-    <!-- 負責人：SOP設定 -->
     <div class="page" id="page-o-sop">
       <div class="page-header"><div class="page-title">SOP 話術設定</div><div class="page-sub">新增或刪除 SOP 知識庫內容</div></div>
       <div class="card">
         <div id="o-sop-list" class="admin-section"></div>
-        <div class="add-row">
-          <input id="o-new-sop-title" placeholder="標題" style="flex:2;">
-          <select id="o-new-sop-cat" style="max-width:130px;"><option value="介紹補習班">介紹補習班</option><option value="家長Q&A">家長Q&A</option></select>
-        </div>
-        <div class="add-row" style="margin-top:6px;">
-          <textarea id="o-new-sop-content" placeholder="話術內容..." style="min-height:80px;resize:vertical;border:1.5px solid var(--border2);border-radius:8px;padding:8px 12px;font-family:inherit;font-size:13px;outline:none;background:white;"></textarea>
-        </div>
+        <div class="add-row"><input id="o-new-sop-title" placeholder="標題" style="flex:2;"><select id="o-new-sop-cat" style="max-width:130px;"><option value="介紹補習班">介紹補習班</option><option value="家長Q&A">家長Q&A</option></select></div>
+        <div class="add-row" style="margin-top:6px;"><textarea id="o-new-sop-content" placeholder="話術內容..." style="min-height:80px;resize:vertical;border:1.5px solid var(--border2);border-radius:8px;padding:8px 12px;font-family:inherit;font-size:13px;outline:none;background:white;"></textarea></div>
         <button class="btn btn-owner btn-sm" style="margin-top:8px;" onclick="addSop()">+ 新增 SOP</button>
       </div>
     </div>
-
-  </div><!-- /main -->
+  </div>
  </div>
 </div>
-
-<!-- SOP Modal -->
 <div class="modal-overlay" id="sop-modal" onclick="if(event.target.id==='sop-modal')closeSopModal()">
   <div class="modal-box">
     <div class="modal-header"><div class="modal-title" id="sop-modal-title"></div><button class="modal-close" onclick="closeSopModal()">✕</button></div>
     <div class="modal-content" id="sop-modal-content"></div>
   </div>
 </div>
-
-<!-- Toast -->
 <div class="toast" id="toast"></div>
-
-<!-- Notification Banner -->
 <div class="notif-banner" id="notif-banner">
   <div class="notif-icon">📣</div>
   <div style="flex:1"><div class="notif-title" id="notif-title"></div><div class="notif-msg" id="notif-msg"></div></div>
   <div class="notif-close" onclick="document.getElementById('notif-banner').classList.remove('show')">✕</div>
 </div>
-
 <script>
 const SUPABASE_URL='https://msvvyxiehmlljcgrgeqy.supabase.co';
 const SUPABASE_KEY='sb_publishable_Aq7gxQn5xNokyJ8umJ7Few_WkQ52X85';
@@ -430,7 +369,6 @@ const OWNER_SECRET='small_chicken_yyds';
 let currentUser=null,currentProfile=null,currentSchool=null;
 let subtasks=[],regRole=null,verifiedRoomCode=null,realtimeChannel=null;
 
-// Helpers
 function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+type;setTimeout(()=>el.className='toast',3200);}
 function today(){return new Date().toISOString().split('T')[0];}
 function fmtDateTime(d){return new Date(d).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});}
@@ -442,8 +380,6 @@ function showNotif(title,msg){
   setTimeout(()=>el.classList.remove('show'),6000);
   if('Notification' in window&&Notification.permission==='granted') new Notification(title,{body:msg});
 }
-
-// AUTH
 function switchTab(tab){
   document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(tab==='login'&&i===0)||(tab==='register'&&i===1)));
   document.getElementById('login-form').style.display=tab==='login'?'':'none';
@@ -466,12 +402,12 @@ function showRegStep(step){
 function selectRole(role){regRole=role;document.getElementById('role-card-owner').classList.toggle('selected',role==='owner');document.getElementById('role-card-assistant').classList.toggle('selected',role==='assistant');}
 function goStep2(){if(!regRole)return showAuthError('請選擇您的身分');showRegStep(2);}
 function backStep1(){showRegStep(1);}
-function verifyOwnerSecret(){if(document.getElementById('owner-secret').value!==OWNER_SECRET){showAuthError('❌ 安全碼錯誤，沒有建立負責人帳號的權限');document.getElementById('owner-secret').value='';return;}showRegStep(3);}
+function verifyOwnerSecret(){if(document.getElementById('owner-secret').value!==OWNER_SECRET){showAuthError('安全碼錯誤，沒有建立負責人帳號的權限');document.getElementById('owner-secret').value='';return;}showRegStep(3);}
 async function verifyRoomCode(){
   const code=document.getElementById('assistant-room-code').value.trim();
   if(!code)return showAuthError('請輸入教室代碼');
   const {data:school}=await sb.from('schools').select('*').eq('code',code).single();
-  if(!school)return showAuthError('❌ 找不到此教室代碼，請確認後再試');
+  if(!school)return showAuthError('找不到此教室代碼，請確認後再試');
   verifiedRoomCode=code;showRegStep(3);
 }
 async function doLogin(){
@@ -500,22 +436,26 @@ async function doRegister(){
     const userId=authData.user?.id;
     const {data:newSchool,error:nsErr}=await sb.from('schools').insert({code:roomCode,name:schoolName}).select().single();
     if(nsErr){showAuthError('建立教室失敗：'+nsErr.message);btn.disabled=false;btn.textContent='建立帳號';return;}
-    await sb.from('profiles').upsert({id:userId,school_id:newSchool.id,name,role:'owner'});
-    toast('帳號建立成功！','success');switchTab('login');
+    const {error:profileErr}=await sb.from('profiles').upsert({id:userId,school_id:newSchool.id,name,role:'owner'},{onConflict:'id'});
+    if(profileErr){showAuthError('Profile建立失敗：'+profileErr.message);btn.disabled=false;btn.textContent='建立帳號';return;}
+    await new Promise(r=>setTimeout(r,800));
+    const {data:check}=await sb.from('profiles').select('role').eq('id',userId).single();
+    if(check?.role!=='owner'){showAuthError('角色設定失敗，請再試一次');btn.disabled=false;btn.textContent='建立帳號';return;}
+    toast('負責人帳號建立成功！','success');switchTab('login');
   } else {
     const {data:school}=await sb.from('schools').select('*').eq('code',verifiedRoomCode).single();
     if(!school){showAuthError('教室不存在，請重新開始');btn.disabled=false;btn.textContent='建立帳號';return;}
     const {data:authData,error:authErr}=await sb.auth.signUp({email,password,options:{data:{name}}});
     if(authErr){showAuthError('註冊失敗：'+authErr.message);btn.disabled=false;btn.textContent='建立帳號';return;}
     const userId=authData.user?.id;
-    await sb.from('profiles').upsert({id:userId,school_id:school.id,name,role:'assistant'});
-    toast('帳號建立成功！','success');switchTab('login');
+    const {error:profileErr}=await sb.from('profiles').upsert({id:userId,school_id:school.id,name,role:'assistant'},{onConflict:'id'});
+    if(profileErr){showAuthError('Profile建立失敗：'+profileErr.message);btn.disabled=false;btn.textContent='建立帳號';return;}
+    toast('助理帳號建立成功！','success');switchTab('login');
   }
   btn.disabled=false;btn.textContent='建立帳號';
 }
 async function doLogout(){if(realtimeChannel)sb.removeChannel(realtimeChannel);await sb.auth.signOut();location.reload();}
 
-// Bootstrap
 sb.auth.onAuthStateChange(async(event,session)=>{
   if(session?.user){
     currentUser=session.user;
@@ -530,20 +470,26 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 });
 
 async function loadProfile(){
-  const {data:profile}=await sb.from('profiles').select('*,schools(*)').eq('id',currentUser.id).single();
-  currentProfile=profile;currentSchool=profile?.schools;
-  const init=(profile?.name||'?').slice(0,1);
-  const isOwner=profile?.role==='owner'||profile?.role==='superadmin';
+  let profile=null;
+  for(let i=0;i<6;i++){
+    const {data}=await sb.from('profiles').select('*,schools(*)').eq('id',currentUser.id).single();
+    if(data?.role&&data?.school_id){profile=data;break;}
+    await new Promise(r=>setTimeout(r,500));
+  }
+  if(!profile){toast('讀取帳號資料失敗，請重新登入','error');await sb.auth.signOut();location.reload();return;}
+  currentProfile=profile;currentSchool=profile.schools;
+  const init=(profile.name||'?').slice(0,1);
+  const isOwner=profile.role==='owner'||profile.role==='superadmin';
   if(isOwner){
     document.getElementById('o-school-name').textContent=currentSchool?.name||'補習班';
     document.getElementById('o-school-code').textContent='代碼：'+(currentSchool?.code||'---');
-    document.getElementById('o-name').textContent=profile?.name||'';
+    document.getElementById('o-name').textContent=profile.name||'';
     document.getElementById('o-avatar').textContent=init;
     document.getElementById('owner-sidebar').style.display='flex';
   } else {
     document.getElementById('a-school-name').textContent=currentSchool?.name||'補習班';
     document.getElementById('a-school-code').textContent='代碼：'+(currentSchool?.code||'---');
-    document.getElementById('a-name').textContent=profile?.name||'';
+    document.getElementById('a-name').textContent=profile.name||'';
     document.getElementById('a-avatar').textContent=init;
     document.getElementById('assistant-sidebar').style.display='flex';
   }
@@ -563,7 +509,6 @@ function initApp(){
   setupRealtime();
 }
 
-// Realtime
 function setupRealtime(){
   if(!currentSchool) return;
   realtimeChannel=sb.channel('school-'+currentSchool.id)
@@ -582,27 +527,21 @@ function setupRealtime(){
 
 function setBadge(navId){
   const nav=document.getElementById(navId);
-  if(!nav) return;
-  if(!nav.querySelector('.nav-badge')){const b=document.createElement('span');b.className='nav-badge';b.textContent='!';nav.appendChild(b);}
+  if(!nav||nav.querySelector('.nav-badge')) return;
+  const b=document.createElement('span');b.className='nav-badge';b.textContent='!';nav.appendChild(b);
 }
 
-// Navigation
 function showPage(prefix,id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const pg=document.getElementById('page-'+prefix+'-'+id);
   if(pg) pg.classList.add('active');
   if(el){el.classList.add('active');const b=el.querySelector('.nav-badge');if(b)b.remove();}
-  const loaders={
-    'a-sop':loadSop,'a-handover':loadHandover,'a-shift':loadShiftList,
-    'o-overview':loadOwnerOverview,'o-shift':()=>{loadOwnerShiftPending();loadOwnerShiftFilled();loadOwnerShiftHistory();},
-    'o-handover':loadOwnerHandover,'o-members':loadMembers,'o-tasks':loadAdminTasks,'o-sop':loadAdminSops
-  };
+  const loaders={'a-sop':loadSop,'a-handover':loadHandover,'a-shift':loadShiftList,'o-overview':loadOwnerOverview,'o-shift':()=>{loadOwnerShiftPending();loadOwnerShiftFilled();loadOwnerShiftHistory();},'o-handover':loadOwnerHandover,'o-members':loadMembers,'o-tasks':loadAdminTasks,'o-sop':loadAdminSops};
   const key=prefix+'-'+id;
   if(loaders[key]) loaders[key]();
 }
 
-// Tasks
 async function loadTasks(){
   if(!currentSchool){document.getElementById('a-task-content').innerHTML='<div class="empty">尚未加入任何教室</div>';return;}
   const {data:templates}=await sb.from('task_templates').select('*').eq('school_id',currentSchool.id).order('sort_order');
@@ -610,8 +549,8 @@ async function loadTasks(){
   const doneIds=new Set((done||[]).map(d=>d.template_id));
   if(!templates?.length){document.getElementById('a-task-content').innerHTML='<div class="card"><div class="empty">尚無任務，請等負責人設定。</div></div>';updateProg(0,0);return;}
   const cats=[...new Set(templates.map(t=>t.category))];
-  let html='';
   const icons={'開班前':'🌅','上班中':'☀️','下班前':'🌙'};
+  let html='';
   cats.forEach(cat=>{
     html+=`<div class="card"><div class="card-title">${icons[cat]||'📌'} ${cat}</div>`;
     templates.filter(t=>t.category===cat).forEach(t=>{
@@ -637,7 +576,6 @@ async function toggleTask(cb,tid){
   updateProg(document.querySelectorAll('#a-task-content .task-cb:checked').length,all.length);
 }
 
-// SOP
 async function loadSop(){
   if(!currentSchool) return;
   const {data:items}=await sb.from('sop_items').select('*').eq('school_id',currentSchool.id).order('sort_order');
@@ -652,7 +590,6 @@ function renderSopGrid(elId,items){
 function openSop(title,content){document.getElementById('sop-modal-title').textContent=unescape(title);document.getElementById('sop-modal-content').textContent=unescape(content);document.getElementById('sop-modal').classList.add('open');}
 function closeSopModal(){document.getElementById('sop-modal').classList.remove('open');}
 
-// Handover
 async function loadHandover(){
   if(!currentSchool) return;
   const {data:logs}=await sb.from('handover_logs').select('*,profiles(name)').eq('school_id',currentSchool.id).order('created_at',{ascending:false}).limit(15);
@@ -671,7 +608,6 @@ async function submitHandover(){
   toast('交接日誌已送出！','success');document.getElementById('a-handover-note').value='';subtasks=[];renderChips();loadHandover();
 }
 
-// Shift (助理)
 async function loadShiftList(){
   if(!currentSchool) return;
   const {data:requests}=await sb.from('shift_requests').select('*,requester:requester_id(name),substitute:substitute_id(name)').eq('school_id',currentSchool.id).order('requested_at',{ascending:false});
@@ -701,7 +637,6 @@ async function takeShift(id){
   toast('已接受代班，等待負責人審核','success');loadShiftList();
 }
 
-// Owner Overview
 async function loadOwnerOverview(){
   if(!currentSchool) return;
   const [{data:members},{data:pending},{data:filled},{data:logs}]=await Promise.all([
@@ -727,7 +662,6 @@ async function loadOwnerOverview(){
   }).join('');
 }
 
-// Owner Shift
 async function loadOwnerShiftPending(){
   const {data}=await sb.from('shift_requests').select('*,requester:requester_id(name)').eq('school_id',currentSchool.id).eq('status','pending').order('requested_at');
   const el=document.getElementById('o-shift-pending');
@@ -753,7 +687,6 @@ async function loadOwnerShiftHistory(){
 async function approveShift(id){await sb.from('shift_requests').update({status:'approved'}).eq('id',id);toast('已核准','success');loadOwnerShiftFilled();loadOwnerShiftHistory();loadOwnerOverview();}
 async function rejectShift(id){await sb.from('shift_requests').update({status:'rejected'}).eq('id',id);toast('已拒絕');loadOwnerShiftFilled();loadOwnerShiftHistory();loadOwnerOverview();}
 
-// Owner Handover
 async function loadOwnerHandover(){
   const {data:logs}=await sb.from('handover_logs').select('*,profiles(name)').eq('school_id',currentSchool.id).order('created_at',{ascending:false}).limit(20);
   const el=document.getElementById('o-handover-logs');
@@ -761,7 +694,6 @@ async function loadOwnerHandover(){
   el.innerHTML=logs.map(l=>`<div class="handover-log"><div class="handover-meta">${fmtDateTime(l.created_at)} ・ ${l.profiles?.name||'未知'}</div><div class="handover-note-text">${l.note}</div>${(l.sub_tasks||[]).map(t=>`<div class="handover-subtask">☐ ${t.text}</div>`).join('')}</div>`).join('');
 }
 
-// Members
 async function loadMembers(){
   const {data:members}=await sb.from('profiles').select('*').eq('school_id',currentSchool.id).order('created_at');
   const el=document.getElementById('o-member-list');
@@ -770,7 +702,6 @@ async function loadMembers(){
   el.innerHTML=members.map(m=>`<div class="member-item"><div class="member-avatar">${(m.name||'?').slice(0,1)}</div><div style="flex:1"><div style="font-size:13px;font-weight:500;">${m.name||'（未命名）'}</div><div style="font-size:11px;color:var(--text3)">${roleLabel[m.role]||m.role}</div></div></div>`).join('');
 }
 
-// Admin Tasks
 async function loadAdminTasks(){
   const {data:tasks}=await sb.from('task_templates').select('*').eq('school_id',currentSchool.id).order('sort_order');
   const el=document.getElementById('o-task-list');
@@ -789,7 +720,6 @@ async function addTask(){
 }
 async function deleteTask(id){await sb.from('task_templates').delete().eq('id',id);toast('已刪除');loadAdminTasks();}
 
-// Admin SOP
 async function loadAdminSops(){
   const {data:items}=await sb.from('sop_items').select('*').eq('school_id',currentSchool.id).order('sort_order');
   const el=document.getElementById('o-sop-list');
