@@ -458,14 +458,14 @@ async function doLogout(){if(realtimeChannel)sb.removeChannel(realtimeChannel);a
 
 let _appInitialized=false;
 sb.auth.onAuthStateChange(async(event,session)=>{
-  if(session?.user&&!_appInitialized){
+  if(event==='SIGNED_IN'&&session?.user&&!_appInitialized){
     _appInitialized=true;
     currentUser=session.user;
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('app-screen').style.display='block';
     await loadProfile();
     if(currentProfile) initApp();
-  } else if(!session?.user){
+  } else if(event==='SIGNED_OUT'||(!session?.user&&_appInitialized)){
     _appInitialized=false;
     currentUser=null;currentProfile=null;currentSchool=null;
     document.getElementById('auth-screen').style.display='flex';
