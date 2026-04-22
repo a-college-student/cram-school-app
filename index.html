@@ -368,6 +368,20 @@ const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
   auth:{persistSession:false,autoRefreshToken:false}
 });
 const OWNER_SECRET='small_chicken_yyds';
+const LINE_TOKEN='SLx1XmWynbFa6zvXiTfINy4ruBr7oBL5w1NMxpRqt8dk4MKVvjRiHhY60gRCaKm/ebOJEZINCxZdXEQTawpa2st4ZYmWYGSzVfiMoPH2kfZ6KlAYw1ybuvIjc7lZ2ELE7ZfTomd0vWT5RAvVkMWYLwdB04t89/1O/w1cDnyilFU=';
+const LINE_GROUPS=['C862bbb24aae4c28082cc3818970e13cd','Cd6fa43e42ef2c63261d4f858604110da'];
+
+async function sendLineMessage(msg){
+  for(const groupId of LINE_GROUPS){
+    try{
+      await fetch('https://api.line.me/v2/bot/message/push',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+LINE_TOKEN},
+        body:JSON.stringify({to:groupId,messages:[{type:'text',text:msg}]})
+      });
+    } catch(e){console.log('Line push error:',e);}
+  }
+}
 let currentUser=null,currentProfile=null,currentSchool=null;
 let subtasks=[],regRole=null,verifiedRoomCode=null,realtimeChannel=null;
 
@@ -660,15 +674,37 @@ async function submitShift(){
   if(!date){toast('請選擇日期','error');return;}
   const {error}=await sb.from('shift_requests').insert({school_id:currentSchool.id,requester_id:currentProfile.id,shift_date:date,start_time:document.getElementById('a-shift-start').value,end_time:document.getElementById('a-shift-end').value,reason:document.getElementById('a-shift-reason').value.trim(),status:'pending'});
   if(error){toast('送出失敗：'+error.message,'error');return;}
-  toast('代班申請已送出！','success');document.getElementById('a-shift-reason').value='';loadShiftList();
+  toast('代班申請已送出！','success');
+  document.getElementById('a-shift-reason').value='';
+  loadShiftList();
+  // 發送 Line 通知給所有群組
+  const shiftDate=document.getElementById('a-shift-date').value;
+  const shiftStart=document.getElementById('a-shift-start').value;
+  const shiftEnd=document.getElementById('a-shift-end').value;
+  const shiftReason=document.getElementById('a-shift-reason').value||'未填寫';
+  const msg=`📣 代班需求通知！\n\n${currentProfile.name} 需要代班\n📅 日期：${shiftDate}\n⏰ 時間：${shiftStart}–${shiftEnd}\n📝 原因：${shiftReason}\n\n有空的話請到補習班助理系統接受代班，多賺點錢！(問就是想!)`;
+  sendLineMessage(msg);
 }
 async function takeShift(id){
   await sb.from('shift_requests').update({substitute_id:currentProfile.id,status:'filled'}).eq('id',id);
   toast('已接受代班，等待負責人審核','success');loadShiftList();
 }
 
+async function checkOverdueShifts(){
+  if(!currentSchool) return;
+  const {data}=await sb.from('shift_requests').select('*,requester:requester_id(name)').eq('school_id',currentSchool.id).eq('status','pending');
+  if(!data?.length) return;
+  const overdue=data.filter(r=>(Date.now()-new Date(r.requested_at))/3600000>24);
+  if(overdue.length>0){
+    const names=overdue.map(r=>`${r.requester?.name}（${r.shift_date}）`).join('、');
+    const msg=`🚨 代班緊急通知！\n\n以下代班申請超過24小時尚未找到代班人：\n${names}\n\n沒人上班啦！沒人上班啦！請盡快處理！`;
+    sendLineMessage(msg);
+  }
+}
+
 async function loadOwnerOverview(){
   if(!currentSchool) return;
+  checkOverdueShifts();
   const [{data:members},{data:pending},{data:filled},{data:logs}]=await Promise.all([
     sb.from('profiles').select('id').eq('school_id',currentSchool.id),
     sb.from('shift_requests').select('id').eq('school_id',currentSchool.id).eq('status','pending'),
