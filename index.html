@@ -364,7 +364,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 <script>
 const SUPABASE_URL='https://msvvyxiehmlljcgrgeqy.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1zdnZ5eGllaG1sbGpjZ3JnZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMjQ3NzIsImV4cCI6MjA5MTkwMDc3Mn0.t49W3PBlsDK_j6EDcMrb1Ml6FEfGM5q_zu7NrKwqzT8';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+  auth:{persistSession:false,autoRefreshToken:false}
+});
 const OWNER_SECRET='small_chicken_yyds';
 let currentUser=null,currentProfile=null,currentSchool=null;
 let subtasks=[],regRole=null,verifiedRoomCode=null,realtimeChannel=null;
@@ -467,10 +469,13 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('app-screen').style.display='block';
     await loadProfile();
+    console.log('loadProfile done, profile:', currentProfile?.role, 'school:', currentSchool?.name);
     if(currentProfile){
+      console.log('calling initApp...');
       initApp();
+      console.log('initApp done');
     } else {
-      // loadProfile 失敗，回到登入頁
+      console.log('no profile, going back to login');
       _appInitialized=false;
       document.getElementById('auth-screen').style.display='flex';
       document.getElementById('app-screen').style.display='none';
@@ -519,12 +524,15 @@ async function loadProfile(){
 
 function initApp(){
   const isOwner=currentProfile?.role==='owner'||currentProfile?.role==='superadmin';
+  console.log('initApp: isOwner=', isOwner, 'role=', currentProfile?.role);
   if(isOwner){
     document.getElementById('o-date').textContent=new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+    console.log('loading owner overview...');
     loadOwnerOverview();
   } else {
     document.getElementById('a-task-date').textContent=new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
     document.getElementById('a-shift-date').value=today();
+    console.log('loading tasks...');
     loadTasks();
     if('Notification' in window&&Notification.permission==='default') Notification.requestPermission();
   }
