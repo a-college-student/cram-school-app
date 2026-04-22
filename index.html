@@ -672,14 +672,15 @@ async function submitShift(){
   if(!date){toast('請選擇日期','error');return;}
   const {error}=await sb.from('shift_requests').insert({school_id:currentSchool.id,requester_id:currentProfile.id,shift_date:date,start_time:document.getElementById('a-shift-start').value,end_time:document.getElementById('a-shift-end').value,reason:document.getElementById('a-shift-reason').value.trim(),status:'pending'});
   if(error){toast('送出失敗：'+error.message,'error');return;}
-  toast('代班申請已送出！','success');
-  document.getElementById('a-shift-reason').value='';
-  loadShiftList();
-  // 發送 Line 通知給所有群組
+  // 先取得資料再清空欄位
   const shiftDate=document.getElementById('a-shift-date').value;
   const shiftStart=document.getElementById('a-shift-start').value;
   const shiftEnd=document.getElementById('a-shift-end').value;
   const shiftReason=document.getElementById('a-shift-reason').value||'未填寫';
+  toast('代班申請已送出！','success');
+  document.getElementById('a-shift-reason').value='';
+  loadShiftList();
+  // 發送 Line 通知給所有群組
   const msg=`📣 代班需求通知！\n\n${currentProfile.name} 需要代班\n📅 日期：${shiftDate}\n⏰ 時間：${shiftStart}–${shiftEnd}\n📝 原因：${shiftReason}\n\n有空的話請到補習班助理系統接受代班，多賺點錢！(問就是想!)`;
   sendLineMessage(msg);
 }
