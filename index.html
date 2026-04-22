@@ -461,14 +461,21 @@ async function doLogout(){if(realtimeChannel)sb.removeChannel(realtimeChannel);a
 
 let _appInitialized=false;
 sb.auth.onAuthStateChange(async(event,session)=>{
-  if(event==='SIGNED_IN'&&session?.user&&!_appInitialized){
+  if(session?.user&&!_appInitialized){
     _appInitialized=true;
     currentUser=session.user;
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('app-screen').style.display='block';
     await loadProfile();
-    if(currentProfile) initApp();
-  } else if(event==='SIGNED_OUT'||(!session?.user&&_appInitialized)){
+    if(currentProfile){
+      initApp();
+    } else {
+      // loadProfile 失敗，回到登入頁
+      _appInitialized=false;
+      document.getElementById('auth-screen').style.display='flex';
+      document.getElementById('app-screen').style.display='none';
+    }
+  } else if(!session?.user){
     _appInitialized=false;
     currentUser=null;currentProfile=null;currentSchool=null;
     document.getElementById('auth-screen').style.display='flex';
@@ -479,22 +486,16 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 async function loadProfile(){
   let profile=null;
   let attempts=0;
-  while(attempts<10){
+  while(attempts<5){
     try{
       const {data,error}=await sb.from('profiles').select('*,schools(*)').eq('id',currentUser.id).maybeSingle();
       if(data?.role&&data?.school_id){profile=data;break;}
       if(error) console.log('Profile fetch error:',error.message);
     } catch(e){console.log('Profile fetch exception:',e);}
     attempts++;
-    await new Promise(r=>setTimeout(r,800));
+    if(attempts<5) await new Promise(r=>setTimeout(r,600));
   }
   if(!profile){
-    // 顯示錯誤但不強制登出，讓使用者手動重試
-    document.getElementById('auth-screen').style.display='flex';
-    document.getElementById('app-screen').style.display='none';
-    document.getElementById('auth-error').textContent='登入後讀取資料失敗，請重新登入';
-    document.getElementById('auth-error').style.display='block';
-    document.getElementById('login-form').style.display='block';
     await sb.auth.signOut();
     return;
   }
