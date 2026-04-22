@@ -363,7 +363,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 </div>
 <script>
 const SUPABASE_URL='https://msvvyxiehmlljcgrgeqy.supabase.co';
-const SUPABASE_KEY='sb_publishable_Aq7gxQn5xNokyJ8umJ7Few_WkQ52X85';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1zdnZ5eGllaG1sbGpjZ3JnZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMjQ3NzIsImV4cCI6MjA5MTkwMDc3Mn0.t49W3PBlsDK_j6EDcMrb1Ml6FEfGM5q_zu7NrKwqzT8';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const OWNER_SECRET='small_chicken_yyds';
 let currentUser=null,currentProfile=null,currentSchool=null;
@@ -436,11 +436,14 @@ async function doRegister(){
     const userId=authData.user?.id;
     const {data:newSchool,error:nsErr}=await sb.from('schools').insert({code:roomCode,name:schoolName}).select().single();
     if(nsErr){showAuthError('建立教室失敗：'+nsErr.message);btn.disabled=false;btn.textContent='建立帳號';return;}
-    const {error:profileErr}=await sb.from('profiles').upsert({id:userId,school_id:newSchool.id,name,role:'owner'},{onConflict:'id'});
-    if(profileErr){showAuthError('Profile建立失敗：'+profileErr.message);btn.disabled=false;btn.textContent='建立帳號';return;}
-    await new Promise(r=>setTimeout(r,800));
-    const {data:check}=await sb.from('profiles').select('role').eq('id',userId).single();
-    if(check?.role!=='owner'){showAuthError('角色設定失敗，請再試一次');btn.disabled=false;btn.textContent='建立帳號';return;}
+    console.log('Attempting profile upsert for userId:', userId, 'schoolId:', newSchool.id);
+    const {data:profileData, error:profileErr}=await sb.from('profiles').upsert({id:userId,school_id:newSchool.id,name,role:'owner'},{onConflict:'id'});
+    console.log('Profile upsert result:', profileData, profileErr);
+    if(profileErr){showAuthError('Profile建立失敗：'+profileErr.message+' (code:'+profileErr.code+')');btn.disabled=false;btn.textContent='建立帳號';return;}
+    await new Promise(r=>setTimeout(r,1000));
+    const {data:check, error:checkErr}=await sb.from('profiles').select('role').eq('id',userId).single();
+    console.log('Profile check:', check, checkErr);
+    if(!check||check?.role!=='owner'){showAuthError('角色設定失敗：'+(checkErr?.message||'找不到profile'));btn.disabled=false;btn.textContent='建立帳號';return;}
     toast('負責人帳號建立成功！','success');switchTab('login');
   } else {
     const {data:school}=await sb.from('schools').select('*').eq('code',verifiedRoomCode).single();
@@ -456,14 +459,18 @@ async function doRegister(){
 }
 async function doLogout(){if(realtimeChannel)sb.removeChannel(realtimeChannel);await sb.auth.signOut();location.reload();}
 
+let _appInitialized=false;
 sb.auth.onAuthStateChange(async(event,session)=>{
-  if(session?.user){
+  if(event==='SIGNED_IN'&&session?.user&&!_appInitialized){
+    _appInitialized=true;
     currentUser=session.user;
-    await loadProfile();
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('app-screen').style.display='block';
-    initApp();
-  } else {
+    await loadProfile();
+    if(currentProfile) initApp();
+  } else if(event==='SIGNED_OUT'||(!session?.user&&_appInitialized)){
+    _appInitialized=false;
+    currentUser=null;currentProfile=null;currentSchool=null;
     document.getElementById('auth-screen').style.display='flex';
     document.getElementById('app-screen').style.display='none';
   }
@@ -471,12 +478,26 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 
 async function loadProfile(){
   let profile=null;
-  for(let i=0;i<6;i++){
-    const {data}=await sb.from('profiles').select('*,schools(*)').eq('id',currentUser.id).single();
-    if(data?.role&&data?.school_id){profile=data;break;}
-    await new Promise(r=>setTimeout(r,500));
+  let attempts=0;
+  while(attempts<10){
+    try{
+      const {data,error}=await sb.from('profiles').select('*,schools(*)').eq('id',currentUser.id).maybeSingle();
+      if(data?.role&&data?.school_id){profile=data;break;}
+      if(error) console.log('Profile fetch error:',error.message);
+    } catch(e){console.log('Profile fetch exception:',e);}
+    attempts++;
+    await new Promise(r=>setTimeout(r,800));
   }
-  if(!profile){toast('讀取帳號資料失敗，請重新登入','error');await sb.auth.signOut();location.reload();return;}
+  if(!profile){
+    // 顯示錯誤但不強制登出，讓使用者手動重試
+    document.getElementById('auth-screen').style.display='flex';
+    document.getElementById('app-screen').style.display='none';
+    document.getElementById('auth-error').textContent='登入後讀取資料失敗，請重新登入';
+    document.getElementById('auth-error').style.display='block';
+    document.getElementById('login-form').style.display='block';
+    await sb.auth.signOut();
+    return;
+  }
   currentProfile=profile;currentSchool=profile.schools;
   const init=(profile.name||'?').slice(0,1);
   const isOwner=profile.role==='owner'||profile.role==='superadmin';
