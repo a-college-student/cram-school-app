@@ -372,15 +372,13 @@ const LINE_TOKEN='SLx1XmWynbFa6zvXiTfINy4ruBr7oBL5w1NMxpRqt8dk4MKVvjRiHhY60gRCaK
 const LINE_GROUPS=['C862bbb24aae4c28082cc3818970e13cd','Cd6fa43e42ef2c63261d4f858604110da'];
 
 async function sendLineMessage(msg){
-  for(const groupId of LINE_GROUPS){
-    try{
-      await fetch('https://api.line.me/v2/bot/message/push',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':'Bearer '+LINE_TOKEN},
-        body:JSON.stringify({to:groupId,messages:[{type:'text',text:msg}]})
-      });
-    } catch(e){console.log('Line push error:',e);}
-  }
+  try{
+    await fetch('https://linkcheckbot.unified-storage.com/send-line',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:msg})
+    });
+  } catch(e){console.log('Line push error:',e);}
 }
 let currentUser=null,currentProfile=null,currentSchool=null;
 let subtasks=[],regRole=null,verifiedRoomCode=null,realtimeChannel=null;
